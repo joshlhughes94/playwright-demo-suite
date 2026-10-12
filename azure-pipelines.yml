@@ -1,0 +1,47 @@
+# Same suite, run in Azure DevOps. Results appear in the pipeline's Tests tab.
+trigger:
+  branches:
+    include: [main]
+
+pr:
+  branches:
+    include: ['*']
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  CI: 'true'
+
+steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '22.x'
+    displayName: Use Node 22
+
+  - script: npm ci
+    displayName: Install dependencies
+
+  - script: npm run typecheck
+    displayName: Type check
+
+  - script: npx playwright install --with-deps chromium webkit
+    displayName: Install browsers
+
+  - script: npx playwright test
+    displayName: Run Playwright tests
+
+  - task: PublishTestResults@2
+    condition: succeededOrFailed()
+    inputs:
+      testResultsFormat: JUnit
+      testResultsFiles: test-results/junit.xml
+      testRunTitle: Playwright
+    displayName: Publish test results
+
+  - task: PublishPipelineArtifact@1
+    condition: succeededOrFailed()
+    inputs:
+      targetPath: playwright-report
+      artifact: playwright-report
+    displayName: Publish HTML report
