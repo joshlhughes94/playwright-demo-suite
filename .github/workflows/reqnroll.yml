@@ -1,0 +1,31 @@
+name: Reqnroll tests (.NET)
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    timeout-minutes: 20
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: dotnet-reqnroll
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - run: dotnet build
+      - run: pwsh bin/Debug/net8.0/playwright.ps1 install --with-deps chromium
+      - run: dotnet test --no-build --logger "trx;LogFileName=results.trx" --logger "console;verbosity=normal"
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: reqnroll-results
+          path: |
+            dotnet-reqnroll/TestResults/
+            dotnet-reqnroll/bin/Debug/net8.0/playwright-traces/
+          retention-days: 14

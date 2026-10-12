@@ -1,0 +1,44 @@
+# Reqnroll suite in Azure DevOps. Results appear in the pipeline's Tests tab.
+trigger:
+  branches:
+    include: [main]
+
+pr:
+  branches:
+    include: ['*']
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  projectDir: dotnet-reqnroll
+
+steps:
+  - task: UseDotNet@2
+    inputs:
+      packageType: sdk
+      version: 8.0.x
+    displayName: Use .NET 8
+
+  - script: dotnet build
+    workingDirectory: $(projectDir)
+    displayName: Build
+
+  - script: pwsh bin/Debug/net8.0/playwright.ps1 install --with-deps chromium
+    workingDirectory: $(projectDir)
+    displayName: Install browsers
+
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: test
+      projects: $(projectDir)/PlaywrightDemo.Tests.csproj
+      arguments: --no-build
+      publishTestResults: true
+    displayName: Run Reqnroll tests
+
+  - task: PublishPipelineArtifact@1
+    condition: failed()
+    inputs:
+      targetPath: $(projectDir)/bin/Debug/net8.0/playwright-traces
+      artifact: playwright-traces
+    displayName: Publish traces for failed scenarios

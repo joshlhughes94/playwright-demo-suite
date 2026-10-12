@@ -3,6 +3,18 @@
 An example end-to-end test suite for a web shop, built the way I set them up for clients. It tests [Sauce Demo](https://www.saucedemo.com), a public practice shop, so anyone can clone it and run it.
 
 [![Playwright tests](https://github.com/joshlhughes94/playwright-demo-suite/actions/workflows/playwright.yml/badge.svg)](https://github.com/joshlhughes94/playwright-demo-suite/actions/workflows/playwright.yml)
+[![Reqnroll tests (.NET)](https://github.com/joshlhughes94/playwright-demo-suite/actions/workflows/reqnroll.yml/badge.svg)](https://github.com/joshlhughes94/playwright-demo-suite/actions/workflows/reqnroll.yml)
+
+## Two versions of the same suite
+
+| | TypeScript | C# with BDD |
+|---|---|---|
+| Where | This folder | [`dotnet-reqnroll/`](dotnet-reqnroll/) |
+| Stack | Playwright Test | Playwright for .NET, Reqnroll, NUnit |
+| Tests written as | Code that reads like user journeys | Gherkin scenarios (Given / When / Then) |
+| Good fit for | JavaScript and TypeScript teams | .NET teams, or teams who want product owners to read the scenarios |
+
+Both cover the same journeys and run in GitHub Actions and Azure DevOps. The rest of this page describes the TypeScript version; see the [.NET README](dotnet-reqnroll/README.md) for the other.
 
 ## What it covers
 
